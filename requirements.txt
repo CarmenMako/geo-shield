@@ -3,4 +3,3 @@ streamlit
 pillow
 pypdf
 reportlab
-python-dotenv
