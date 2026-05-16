@@ -11,6 +11,7 @@ from datetime import datetime
 import streamlit as st
 import streamlit.components.v1 as components
 import pypdf
+from PIL import Image
 from google import genai
 from google.genai import types
 
@@ -96,8 +97,7 @@ def run_gemini_analysis(
     api_key: str,
     report_type: str,
     address_context: str,
-    file_bytes: bytes | None,
-    file_mime: str | None,
+    pil_image: Image.Image | None,
     pdf_text: str | None,
 ) -> str:
     """Odešle požadavek do Gemini a vrátí textovou odpověď."""
@@ -120,8 +120,8 @@ def run_gemini_analysis(
             )
         )
 
-    if file_bytes and file_mime:
-        parts.append(types.Part.from_bytes(data=file_bytes, mime_type=file_mime))
+    if pil_image is not None:
+        parts.append(pil_image)
 
     parts.append(
         types.Part.from_text(
@@ -549,8 +549,7 @@ def main():
             st.warning("⚠️ Nahrajte soubor nebo zadejte alespoň kontext / adresu lokality.")
             st.stop()
 
-        file_bytes = None
-        file_mime = None
+        pil_image = None
         pdf_text = None
 
         if uploaded_file is not None:
@@ -566,8 +565,7 @@ def main():
                         )
             else:
                 uploaded_file.seek(0)
-                file_bytes = image_to_bytes(uploaded_file)
-                file_mime = f"image/{'jpeg' if file_ext in ('jpg', 'jpeg') else 'png'}"
+                pil_image = Image.open(uploaded_file)
 
         with st.spinner("⏳ Analyzuji podklady pomocí Gemini 2.5 Flash…"):
             try:
@@ -575,8 +573,7 @@ def main():
                     api_key=api_key,
                     report_type=report_type,
                     address_context=address_context,
-                    file_bytes=file_bytes,
-                    file_mime=file_mime,
+                    pil_image=pil_image,
                     pdf_text=pdf_text,
                 )
                 st.session_state.analysis_text = result
