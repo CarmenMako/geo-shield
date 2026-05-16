@@ -537,8 +537,6 @@ def main():
         help="Spustí analýzu pomocí Gemini 2.5 Flash.",
     )
 
-    if "analysis_text" not in st.session_state:
-        st.session_state.analysis_text = ""
     if "report_type_used" not in st.session_state:
         st.session_state.report_type_used = ""
     if "address_context_used" not in st.session_state:
@@ -576,7 +574,7 @@ def main():
                     pil_image=pil_image,
                     pdf_text=pdf_text,
                 )
-                st.session_state.analysis_text = result
+                st.session_state['result'] = result
                 st.session_state.report_type_used = report_type
                 st.session_state.address_context_used = address_context
                 st.success("✅ Analýza dokončena.")
@@ -587,7 +585,7 @@ def main():
     st.subheader("📝 Výsledek analýzy")
     edited_text = st.text_area(
         label="Analýza (plně editovatelná – upravte text před uložením)",
-        value=st.session_state.analysis_text,
+        value=st.session_state.get('result', ''),
         height=450,
         key="edited_output",
         placeholder="Výsledek analýzy se zobrazí zde po spuštění…",
