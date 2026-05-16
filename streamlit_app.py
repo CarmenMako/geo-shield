@@ -13,7 +13,6 @@ import streamlit.components.v1 as components
 import pypdf
 from google import genai
 from google.genai import types
-from dotenv import load_dotenv
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -25,7 +24,6 @@ from reportlab.platypus import (
 )
 from reportlab.pdfgen import canvas as rl_canvas
 
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"))
 
 SYSTEM_INSTRUCTION = (
     "Jsi špičkový geodetický auditor. "
@@ -68,7 +66,13 @@ BRAND_LIGHT = colors.HexColor("#f0f4f8")
 
 
 def get_api_key() -> str | None:
-    """Načte API klíč výhradně z prostředí / .env souboru."""
+    """Načte API klíč z Streamlit secrets nebo z prostředí."""
+    try:
+        key = st.secrets["GEMINI_API_KEY"]
+        if key and key.strip():
+            return key.strip()
+    except (KeyError, FileNotFoundError):
+        pass
     return os.environ.get("GEMINI_API_KEY", "").strip() or None
 
 
