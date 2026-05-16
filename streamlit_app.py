@@ -57,7 +57,7 @@ REPORT_TYPES = {
     ),
 }
 
-MODEL_ID = "gemini-2.5-flash"
+MODEL_ID = "gemini-3.1-flash-lite-preview"
 
 BRAND_DARK = colors.HexColor("#1a2b4a")
 BRAND_ACCENT = colors.HexColor("#2e6da4")
