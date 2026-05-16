@@ -580,8 +580,8 @@ def main():
                 st.session_state.report_type_used = report_type
                 st.session_state.address_context_used = address_context
                 st.success("✅ Analýza dokončena.")
-            except Exception as exc:
-                st.error(f"❌ Chyba při komunikaci s Gemini API: {exc}")
+            except Exception as e:
+                st.error(f"Chyba při analýze: {str(e)}")
                 st.stop()
 
     st.subheader("📝 Výsledek analýzy")
