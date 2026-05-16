@@ -527,7 +527,7 @@ def main():
     if uploaded_file is not None:
         file_ext = uploaded_file.name.lower().rsplit(".", 1)[-1]
         if file_ext in ("jpg", "jpeg", "png"):
-            st.image(uploaded_file, caption=f"Náhled: {uploaded_file.name}", use_container_width=True)
+            st.image(uploaded_file, caption=f"Náhled: {uploaded_file.name}")
         else:
             st.info(f"📄 PDF soubor nahrán: **{uploaded_file.name}** ({uploaded_file.size / 1024:.1f} kB)")
 
@@ -609,7 +609,6 @@ def main():
                 data=edited_text.encode("utf-8"),
                 file_name="geo_shield_report.txt",
                 mime="text/plain",
-                use_container_width=True,
             )
 
         with col_dl_md:
@@ -618,7 +617,6 @@ def main():
                 data=edited_text.encode("utf-8"),
                 file_name="geo_shield_report.md",
                 mime="text/markdown",
-                use_container_width=True,
             )
 
         with col_dl_pdf:
@@ -634,7 +632,6 @@ def main():
                 data=pdf_bytes,
                 file_name=f"geo_shield_report_{ts}.pdf",
                 mime="application/pdf",
-                use_container_width=True,
             )
 
     st.divider()
