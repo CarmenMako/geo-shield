@@ -448,12 +448,40 @@ def count_words(text: str) -> int:
     return len(text.split()) if text.strip() else 0
 
 
+APP_PASSWORD = "Carmen2026"
+
+
+def check_password() -> bool:
+    """Zobrazí přihlašovací bránu a vrátí True, pokud uživatel zadal správné heslo."""
+    if st.session_state.get("authenticated"):
+        return True
+
+    st.title("🛡️ GEO-SHIELD Professional Auditor")
+    st.divider()
+    st.subheader("🔒 Přihlášení")
+    password = st.text_input(
+        "Zadejte přístupové heslo",
+        type="password",
+        placeholder="Přístupové heslo…",
+    )
+    if st.button("Vstoupit", type="primary"):
+        if password == APP_PASSWORD:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ Nesprávné heslo. Přístup odepřen.")
+    return False
+
+
 def main():
     st.set_page_config(
         page_title="GEO-SHIELD Professional Auditor",
         page_icon="🛡️",
         layout="wide",
     )
+
+    if not check_password():
+        st.stop()
 
     st.title("🛡️ GEO-SHIELD Professional Auditor")
     st.caption(
