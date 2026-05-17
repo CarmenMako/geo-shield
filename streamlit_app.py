@@ -1,7 +1,7 @@
 """
 GEO-SHIELD Professional Auditor
 Prémiová geodetická aplikace pro analýzu map a katastrálních dokumentů.
-Powered by Google Gemini 2.5 Flash.
+Powered by Google Gemini 3.1 Flash Lite.
 """
 
 import os
@@ -121,7 +121,9 @@ def run_gemini_analysis(
         )
 
     if pil_image is not None:
-        parts.append(pil_image)
+        buf = io.BytesIO()
+        pil_image.save(buf, format="JPEG")
+        parts.append(types.Part.from_bytes(data=buf.getvalue(), mime_type="image/jpeg"))
 
     parts.append(
         types.Part.from_text(
@@ -490,7 +492,7 @@ def main():
     st.title("🛡️ GEO-SHIELD Professional Auditor")
     st.caption(
         "Prémiový nástroj pro geodetickou analýzu map a katastrálních dokumentů "
-        "· Powered by Google Gemini 2.5 Flash"
+        "· Powered by Google Gemini 3.1 Flash Lite"
     )
 
     st.divider()
@@ -534,7 +536,7 @@ def main():
     run_btn = st.button(
         "🚀 Spustit analýzu podkladů",
         type="primary",
-        help="Spustí analýzu pomocí Gemini 2.5 Flash.",
+        help="Spustí analýzu pomocí Gemini 3.1 Flash Lite.",
     )
 
     if "report_type_used" not in st.session_state:
@@ -565,7 +567,7 @@ def main():
                 uploaded_file.seek(0)
                 pil_image = Image.open(uploaded_file)
 
-        with st.spinner("⏳ Analyzuji podklady pomocí Gemini 2.5 Flash…"):
+        with st.spinner("⏳ Analyzuji podklady pomocí Gemini 3.1 Flash Lite…"):
             try:
                 result = run_gemini_analysis(
                     api_key=api_key,
@@ -632,11 +634,18 @@ def main():
                 mime="application/pdf",
             )
 
+    st.info(
+        "🔗 **[FREE OPEN DATA INTEGRATION]:** Architektura systému je plně připravena "
+        "pro bezplatné napojení na Atom feed a dálkový přístup registru RÚIAN / ČÚZK."
+    )
+
     st.divider()
     st.caption(
         "GEO-SHIELD Professional Auditor · Všechna katastrální data musí být ověřena "
         "v oficiální databázi ČÚZK (nahlizenidokn.cuzk.cz) · "
-        "Výstup AI není právně závazným dokumentem."
+        "Výstup AI není právně závazným dokumentem. · "
+        "[FREE OPEN DATA INTEGRATION]: Architektura systému je plně připravena "
+        "pro bezplatné napojení na Atom feed a dálkový přístup registru RÚIAN / ČÚZK."
     )
 
 
