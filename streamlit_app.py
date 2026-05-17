@@ -576,7 +576,7 @@ def main():
                     pil_image=pil_image,
                     pdf_text=pdf_text,
                 )
-                st.session_state['result'] = result
+                st.session_state['vysledek_text'] = result
                 st.session_state.report_type_used = report_type
                 st.session_state.address_context_used = address_context
                 st.success("✅ Analýza dokončena.")
@@ -588,7 +588,7 @@ def main():
     st.subheader("📝 Výsledek analýzy")
     edited_text = st.text_area(
         label="Analýza (plně editovatelná – upravte text před uložením)",
-        value=st.session_state.get('result', ''),
+        value=st.session_state.get('vysledek_text', ''),
         height=450,
         key="edited_output",
         placeholder="Výsledek analýzy se zobrazí zde po spuštění…",
