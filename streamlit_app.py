@@ -581,7 +581,8 @@ def main():
                 st.session_state.address_context_used = address_context
                 st.success("✅ Analýza dokončena.")
             except Exception as e:
-                st.error(f"Chyba při analýze: {str(e)}")
+                print("CHYBA:", e)
+                st.error(f"Skutečná chyba v kódu: {str(e)}")
                 st.stop()
 
     st.subheader("📝 Výsledek analýzy")
