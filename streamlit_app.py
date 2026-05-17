@@ -577,6 +577,7 @@ def main():
                     pdf_text=pdf_text,
                 )
                 st.session_state['vysledek_text'] = result
+                st.session_state['edited_output'] = result
                 st.session_state.report_type_used = report_type
                 st.session_state.address_context_used = address_context
                 st.success("✅ Analýza dokončena.")
@@ -584,6 +585,20 @@ def main():
                 print("CHYBA:", e)
                 st.error(f"Skutečná chyba v kódu: {str(e)}")
                 st.stop()
+
+    st.info(
+        "🔗 **[FREE OPEN DATA INTEGRATION]:** Architektura systému je plně připravena "
+        "pro bezplatné napojení na Atom feed a dálkový přístup registru RÚIAN / ČÚZK."
+    )
+
+    st.divider()
+    st.caption(
+        "GEO-SHIELD Professional Auditor · Všechna katastrální data musí být ověřena "
+        "v oficiální databázi ČÚZK (nahlizenidokn.cuzk.cz) · "
+        "Výstup AI není právně závazným dokumentem. · "
+        "[FREE OPEN DATA INTEGRATION]: Architektura systému je plně připravena "
+        "pro bezplatné napojení na Atom feed a dálkový přístup registru RÚIAN / ČÚZK."
+    )
 
     st.subheader("📝 Výsledek analýzy")
     edited_text = st.text_area(
@@ -634,20 +649,6 @@ def main():
                 file_name=f"geo_shield_report_{ts}.pdf",
                 mime="application/pdf",
             )
-
-    st.info(
-        "🔗 **[FREE OPEN DATA INTEGRATION]:** Architektura systému je plně připravena "
-        "pro bezplatné napojení na Atom feed a dálkový přístup registru RÚIAN / ČÚZK."
-    )
-
-    st.divider()
-    st.caption(
-        "GEO-SHIELD Professional Auditor · Všechna katastrální data musí být ověřena "
-        "v oficiální databázi ČÚZK (nahlizenidokn.cuzk.cz) · "
-        "Výstup AI není právně závazným dokumentem. · "
-        "[FREE OPEN DATA INTEGRATION]: Architektura systému je plně připravena "
-        "pro bezplatné napojení na Atom feed a dálkový přístup registru RÚIAN / ČÚZK."
-    )
 
 
 if __name__ == "__main__":
