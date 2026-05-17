@@ -24,6 +24,11 @@ from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, HRFlowable, Table, TableStyle,
 )
 from reportlab.pdfgen import canvas as rl_canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+pdfmetrics.registerFont(TTFont("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+pdfmetrics.registerFont(TTFont("DejaVuSans-Bold", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"))
 
 
 SYSTEM_INSTRUCTION = (
@@ -160,10 +165,10 @@ def _draw_header_footer(canvas_obj, doc, report_type: str, address_context: str)
     canvas_obj.rect(0, page_h - 30 * mm, page_w, 2 * mm, fill=1, stroke=0)
 
     canvas_obj.setFillColor(colors.white)
-    canvas_obj.setFont("Helvetica-Bold", 15)
+    canvas_obj.setFont("DejaVuSans-Bold", 15)
     canvas_obj.drawString(15 * mm, page_h - 13 * mm, "GEO-SHIELD Professional Auditor")
 
-    canvas_obj.setFont("Helvetica", 8)
+    canvas_obj.setFont("DejaVuSans", 8)
     canvas_obj.setFillColor(colors.HexColor("#a8c4e0"))
     canvas_obj.drawRightString(
         page_w - 15 * mm,
@@ -180,7 +185,7 @@ def _draw_header_footer(canvas_obj, doc, report_type: str, address_context: str)
     canvas_obj.rect(0, 0, page_w, 14 * mm, fill=1, stroke=0)
 
     canvas_obj.setFillColor(colors.HexColor("#a8c4e0"))
-    canvas_obj.setFont("Helvetica", 7)
+    canvas_obj.setFont("DejaVuSans", 7)
     canvas_obj.drawString(
         15 * mm,
         5 * mm,
@@ -205,8 +210,8 @@ def _draw_cuzk_stamp(canvas_obj, doc):
 
     stamp_text = "NEOVĚŘENO ČÚZK"
     font_size = 48
-    canvas_obj.setFont("Helvetica-Bold", font_size)
-    text_w = canvas_obj.stringWidth(stamp_text, "Helvetica-Bold", font_size)
+    canvas_obj.setFont("DejaVuSans-Bold", font_size)
+    text_w = canvas_obj.stringWidth(stamp_text, "DejaVuSans-Bold", font_size)
 
     canvas_obj.setStrokeColor(BRAND_WARNING)
     canvas_obj.setLineWidth(2.5)
@@ -225,7 +230,7 @@ def _draw_cuzk_stamp(canvas_obj, doc):
 
     canvas_obj.setFillColor(BRAND_WARNING)
     canvas_obj.setFillAlpha(0.12)
-    canvas_obj.setFont("Helvetica-Bold", font_size)
+    canvas_obj.setFont("DejaVuSans-Bold", font_size)
     canvas_obj.drawCentredString(0, 0, stamp_text)
 
     canvas_obj.restoreState()
@@ -258,21 +263,21 @@ def generate_pdf(
 
     style_meta_label = ParagraphStyle(
         "MetaLabel",
-        fontName="Helvetica-Bold",
+        fontName="DejaVuSans-Bold",
         fontSize=8,
         textColor=BRAND_ACCENT,
         spaceAfter=1,
     )
     style_meta_value = ParagraphStyle(
         "MetaValue",
-        fontName="Helvetica",
+        fontName="DejaVuSans",
         fontSize=9,
         textColor=BRAND_DARK,
         spaceAfter=0,
     )
     style_heading = ParagraphStyle(
         "GeoHeading",
-        fontName="Helvetica-Bold",
+        fontName="DejaVuSans-Bold",
         fontSize=12,
         textColor=BRAND_DARK,
         spaceBefore=8,
@@ -281,7 +286,7 @@ def generate_pdf(
     )
     style_body = ParagraphStyle(
         "GeoBody",
-        fontName="Helvetica",
+        fontName="DejaVuSans",
         fontSize=9.5,
         textColor=colors.HexColor("#222222"),
         leading=14,
@@ -289,7 +294,7 @@ def generate_pdf(
     )
     style_warning = ParagraphStyle(
         "GeoWarning",
-        fontName="Helvetica-Oblique",
+        fontName="DejaVuSans",
         fontSize=8.5,
         textColor=BRAND_WARNING,
         leading=12,
@@ -299,7 +304,7 @@ def generate_pdf(
     )
     style_stamp_box = ParagraphStyle(
         "StampBox",
-        fontName="Helvetica-Bold",
+        fontName="DejaVuSans-Bold",
         fontSize=8,
         textColor=BRAND_WARNING,
         alignment=TA_CENTER,
@@ -368,7 +373,15 @@ def generate_pdf(
     story.append(Paragraph("Výsledek analýzy", style_heading))
     story.append(HRFlowable(width="100%", thickness=0.4, color=colors.HexColor("#c8d8ea"), spaceBefore=2, spaceAfter=5))
 
-    for line in analysis_text.splitlines():
+    clean_text = (
+        analysis_text
+        .replace("**", "")
+        .replace("### ", "")
+        .replace("## ", "")
+        .replace("# ", "")
+    )
+
+    for line in clean_text.splitlines():
         stripped = line.strip()
         if not stripped:
             story.append(Spacer(1, 2 * mm))
@@ -381,14 +394,7 @@ def generate_pdf(
             .replace(">", "&gt;")
         )
 
-        if stripped.startswith("## ") or stripped.startswith("# "):
-            heading_text = stripped.lstrip("#").strip()
-            story.append(Spacer(1, 3 * mm))
-            story.append(Paragraph(heading_text, style_heading))
-        elif stripped.startswith("**") and stripped.endswith("**"):
-            bold_text = stripped[2:-2]
-            story.append(Paragraph(f"<b>{bold_text}</b>", style_body))
-        elif "ČÚZK" in stripped or "varování" in stripped.lower() or stripped.startswith("⚠") or "RIZIKO:" in stripped:
+        if "ČÚZK" in stripped or "varování" in stripped.lower() or stripped.startswith("⚠") or "RIZIKO:" in stripped:
             story.append(Paragraph(line_escaped, style_warning))
         elif stripped.startswith("- ") or stripped.startswith("* ") or stripped.startswith("• "):
             bullet_text = stripped[2:].strip()
@@ -405,7 +411,7 @@ def generate_pdf(
             "Není náhradou za odborný geodetický posudek ani právně závazným dokumentem.",
             ParagraphStyle(
                 "Disclaimer",
-                fontName="Helvetica-Oblique",
+                fontName="DejaVuSans",
                 fontSize=7.5,
                 textColor=colors.HexColor("#888888"),
                 alignment=TA_CENTER,
